@@ -1,0 +1,29 @@
+{
+  "configurations" : [
+    {
+      "id" : "18C00544-A43A-48FC-AD34-398884084D97",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:",
+      "identifier" : "FDAFilesManager",
+      "name" : "FDAFilesManager"
+    }
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "FDAFilesManagerTests",
+        "name" : "FDAFilesManagerTests"
+      }
+    }
+  ],
+  "version" : 1
+}
