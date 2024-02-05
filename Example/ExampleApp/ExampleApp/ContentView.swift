@@ -9,7 +9,7 @@ struct ContentView: View {
     private var filesManager: FDAFilesManager
 
     init() {
-        filesManager = FDAFilesManager(destinationDirectoryName: "com.fresneda.exampleapp")
+        filesManager = FDAFilesManager(destinationFolderName: "com.fresneda.exampleapp")
     }
 
     var body: some View {

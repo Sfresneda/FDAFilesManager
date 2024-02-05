@@ -7,10 +7,13 @@ final class FDAFilesManagerTests: XCTestCase {
     let testDirectoryName = "TestDirectory"
 
     override func setUpWithError() throws {
-        sut = FDAFilesManager(destinationDirectoryName: testDirectoryName)
+        sut = FDAFilesManager(destinationFolderName: testDirectoryName)
     }
+    override func tearDown() async throws {
+        for url in try await sut.allFilesDirectory() {
+            try await sut.deleteFile(url: url)
+        }
 
-    override func tearDownWithError() throws {
         sut = nil
     }
 

@@ -1,5 +1,5 @@
 # FDAFilesManager
-FileManager.default wrapper for iOS/macOS/watchOS/tvOS/iPadOS, written in Swift 5.8
+FileManager.default wrapper for iOS/macOS/watchOS/tvOS/iPadOS, written in Swift 5.9
 
 ## Installation
 Add this SPM dependency to your project:
@@ -12,7 +12,7 @@ https://github.com/Sfresneda/FDAFilesManager
 ```swift
 import FDAFilesManager
 
-let fileManager = FDAFilesManager(destinationDirectoryName: "com.fresneda.fdaapp")
+let fileManager = FDAFilesManager(destinationFolderName: "com.fresneda.fdaapp")
 
 let fileName = "file.txt"
 

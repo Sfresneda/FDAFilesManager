@@ -1,14 +1,21 @@
 import Foundation
 
 /// FDA Files Manager, a class to manage local files.
-/// - Note: This class is thread safe.  
+/// - Note: This class is thread safe.
 public actor FDAFilesManager {
     private let destinationDirectoryName: String
+    private let preferedDirectory: FileManager.SearchPathDirectory
+    private let domainMask: FileManager.SearchPathDomainMask
 
     /// Initialize a new instance of FDAFilesManager.
-    public init(destinationDirectoryName: String) {
-        self.destinationDirectoryName = destinationDirectoryName
-    }
+    public init(
+        destinationFolderName: String,
+        on preferedDirectory: FileManager.SearchPathDirectory = .documentDirectory,
+        with domainMask: FileManager.SearchPathDomainMask = .userDomainMask) {
+            self.destinationDirectoryName = destinationFolderName
+            self.preferedDirectory = preferedDirectory
+            self.domainMask = domainMask
+        }
 }
 
 // MARK: - Public methods
@@ -32,7 +39,7 @@ public extension FDAFilesManager {
     /// - Throws: `FDAFilesManagerError.fileNotFound` if file is not found.
     /// - Returns: File directory.
     func fileDirectory(for name: String) throws -> URL {
-        let directory = documentsDirectory()?
+        let directory = preferedDirectoryPath()?
             .appendingPathComponent(name)
 
         guard let directory,
@@ -47,7 +54,7 @@ public extension FDAFilesManager {
     /// - Throws: `FDAFilesManagerError.documentsDirectoryNotFound` if documents directory is not found.
     /// - Returns: Array of file URLs.
     func allFilesDirectory() throws -> [URL] {
-        guard let directory = documentsDirectory() else {
+        guard let directory = preferedDirectoryPath() else {
             throw FDAFilesManagerError.documentsDirectoryNotFound
         }
 
@@ -68,7 +75,7 @@ public extension FDAFilesManager {
     /// - content: File content.
     /// - Throws: `FDAFilesManagerError.documentsDirectoryNotFound` if documents directory is not found.
     func createFile(name: String, with content: Data? = nil) throws {
-        guard let directory = documentsDirectory() else {
+        guard let directory = preferedDirectoryPath() else {
             throw FDAFilesManagerError.documentsDirectoryNotFound
         }
 
@@ -93,7 +100,7 @@ public extension FDAFilesManager {
         let fileURL = try fileDirectory(for: name)
         try deleteFile(url: fileURL)
     }
-    
+
     /// Delete a file with a given URL.
     /// - Parameter url: File URL.
     func deleteFile(url: URL) throws {
@@ -102,11 +109,11 @@ public extension FDAFilesManager {
 }
 
 private extension FDAFilesManager {
-    func documentsDirectory() -> URL? {
+    func preferedDirectoryPath() -> URL? {
         let directory = FileManager
             .default
-            .urls(for: .documentDirectory,
-                  in: .userDomainMask)
+            .urls(for: preferedDirectory,
+                  in: domainMask)
 
         return directory
             .first?
