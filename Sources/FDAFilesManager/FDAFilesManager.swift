@@ -24,7 +24,7 @@ public extension FDAFilesManager {
     /// Check if file directory is valid.
     /// - Parameter url: File URL.
     /// - Returns: True if file directory is valid, otherwise false.
-    func isFileDirectoryValid(_ url: URL) -> Bool {
+    func isFileDirectoryValid(_ url: URL) async -> Bool {
         let result = if #available(iOS 16.0, *) {
             url.path()
         } else {
@@ -38,12 +38,12 @@ public extension FDAFilesManager {
     /// - Parameter name: File name.
     /// - Throws: `FDAFilesManagerError.fileNotFound` if file is not found.
     /// - Returns: File directory.
-    func fileDirectory(for name: String) throws -> URL {
-        let directory = preferedDirectoryPath()?
+    func fileDirectory(for name: String) async throws -> URL {
+        let directory = await preferedDirectoryPath()?
             .appendingPathComponent(name)
 
         guard let directory,
-              isFileDirectoryValid(directory) else {
+              await isFileDirectoryValid(directory) else {
             throw FDAFilesManagerError.fileNotFound
         }
 
@@ -53,12 +53,12 @@ public extension FDAFilesManager {
     /// Get all files directory.
     /// - Throws: `FDAFilesManagerError.documentsDirectoryNotFound` if documents directory is not found.
     /// - Returns: Array of file URLs.
-    func allFilesDirectory() throws -> [URL] {
-        guard let directory = preferedDirectoryPath() else {
+    func allFilesDirectory() async throws -> [URL] {
+        guard let directory = await preferedDirectoryPath() else {
             throw FDAFilesManagerError.documentsDirectoryNotFound
         }
 
-        guard isFileDirectoryValid(directory) else {
+        guard await isFileDirectoryValid(directory) else {
             throw FDAFilesManagerError.documentsDirectoryNotFound
         }
 
@@ -74,12 +74,12 @@ public extension FDAFilesManager {
     ///  - name: File name.
     /// - content: File content.
     /// - Throws: `FDAFilesManagerError.documentsDirectoryNotFound` if documents directory is not found.
-    func createFile(name: String, with content: Data? = nil) throws {
-        guard let directory = preferedDirectoryPath() else {
+    func createFile(name: String, with content: Data? = nil) async throws {
+        guard let directory = await preferedDirectoryPath() else {
             throw FDAFilesManagerError.documentsDirectoryNotFound
         }
 
-        try createDirectoryIfNeeded(directory: directory)
+        try await createDirectoryIfNeeded(directory: directory)
 
         let fileURL = directory.appendingPathComponent(name)
 
@@ -96,8 +96,8 @@ public extension FDAFilesManager {
     /// Delete a file with a given name.
     /// - Parameter name: File name.
     /// - Throws: `FDAFilesManagerError.fileNotFound` if file is not found.
-    func deleteFile(name: String) throws {
-        let fileURL = try fileDirectory(for: name)
+    func deleteFile(name: String) async throws {
+        let fileURL = try await fileDirectory(for: name)
         try deleteFile(url: fileURL)
     }
 
@@ -109,7 +109,7 @@ public extension FDAFilesManager {
 }
 
 private extension FDAFilesManager {
-    func preferedDirectoryPath() -> URL? {
+    func preferedDirectoryPath() async -> URL? {
         let directory = FileManager
             .default
             .urls(for: preferedDirectory,
@@ -120,8 +120,8 @@ private extension FDAFilesManager {
             .appendingPathComponent(destinationDirectoryName)
     }
 
-    func createDirectoryIfNeeded(directory: URL) throws {
-        guard !isFileDirectoryValid(directory) else {
+    func createDirectoryIfNeeded(directory: URL) async throws {
+        guard await !isFileDirectoryValid(directory) else {
             return
         }
 
